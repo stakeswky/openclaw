@@ -332,6 +332,16 @@ export const nextcloudTalkPlugin: ChannelPlugin<ResolvedNextcloudTalkAccount> = 
         statusSink: (patch) => ctx.setStatus({ accountId: ctx.accountId, ...patch }),
       });
 
+      // Keep the channel task alive until the gateway aborts it. The channel manager
+      // treats a resolved startAccount promise as an unexpected exit and auto-restarts.
+      await new Promise<void>((resolve) => {
+        if (ctx.abortSignal.aborted) {
+          resolve();
+          return;
+        }
+        ctx.abortSignal.addEventListener("abort", () => resolve(), { once: true });
+      });
+
       return { stop };
     },
     logoutAccount: async ({ accountId, cfg }) => {
