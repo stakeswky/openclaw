@@ -762,7 +762,7 @@ describe("createTelegramBot", () => {
         channels: {
           telegram: {
             groupPolicy: "allowlist",
-            allowFrom: ["123456789"],
+            groupAllowFrom: ["123456789"],
             groups: { "*": { requireMention: false } },
           },
         },
@@ -1622,7 +1622,7 @@ describe("createTelegramBot", () => {
         channels: {
           telegram: {
             groupPolicy: "allowlist",
-            allowFrom: ["*"],
+            groupAllowFrom: ["*"],
             groups: { "*": { requireMention: false } },
           },
         },

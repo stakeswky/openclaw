@@ -735,13 +735,14 @@ describe("createTelegramBot", () => {
     expect(payload.WasMentioned).toBe(true);
   });
 
-  it("allows configured group messages in allowlist mode without sender allowlist", async () => {
+  it("allows configured group messages in allowlist mode with explicit groupAllowFrom", async () => {
     onSpy.mockClear();
     replySpy.mockClear();
     loadConfig.mockReturnValue({
       channels: {
         telegram: {
           groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
           groups: {
             "-123456789": { requireMention: false },
           },
@@ -782,6 +783,7 @@ describe("createTelegramBot", () => {
       channels: {
         telegram: {
           groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
           groups: {
             "-1001234567890": {
               requireMention: false,
@@ -825,6 +827,7 @@ describe("createTelegramBot", () => {
       channels: {
         telegram: {
           groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
           groups: {
             "-1001234567890": {
               allowFrom: ["123456789"],
@@ -867,6 +870,7 @@ describe("createTelegramBot", () => {
       channels: {
         telegram: {
           groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
           groups: {
             "-100123456789": {
               groupPolicy: "open",
@@ -902,6 +906,7 @@ describe("createTelegramBot", () => {
       channels: {
         telegram: {
           groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
           groups: {
             "-100123456789": {
               groupPolicy: "open",
@@ -1153,6 +1158,7 @@ describe("createTelegramBot", () => {
       channelConfig: {
         dmPolicy: "open",
         groupPolicy: "allowlist",
+          groupAllowFrom: ["*"],
         groupAllowFrom: ["12345"],
         reactionNotifications: "all",
       },
