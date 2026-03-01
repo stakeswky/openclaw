@@ -42,4 +42,41 @@ describe("runWebHeartbeatOnce (timestamp)", () => {
       await fs.rm(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it("passes heartbeat model override when configured", async () => {
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-web-hb-model-"));
+    const storePath = path.join(tmpDir, "sessions.json");
+    try {
+      await fs.writeFile(storePath, JSON.stringify({}, null, 2));
+
+      const replyResolver = vi.fn().mockResolvedValue([{ text: "HEARTBEAT_OK" }]);
+      const cfg = {
+        gateway: { defaultModel: "openai/gpt-4o-mini" },
+        agents: {
+          defaults: {
+            heartbeat: { every: "5m", model: "anthropic/claude-haiku-4-5-20251001" },
+          },
+        },
+        session: { store: storePath },
+        channels: { whatsapp: { allowFrom: ["*"] } },
+      } as unknown as OpenClawConfig;
+
+      await runWebHeartbeatOnce({
+        cfg,
+        to: "+1555",
+        dryRun: true,
+        replyResolver,
+        sender: vi.fn(),
+      });
+
+      expect(replyResolver).toHaveBeenCalledTimes(1);
+      const replyOpts = replyResolver.mock.calls[0]?.[1];
+      expect(replyOpts).toEqual({
+        isHeartbeat: true,
+        heartbeatModelOverride: "anthropic/claude-haiku-4-5-20251001",
+      });
+    } finally {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    }
+  });
 });
