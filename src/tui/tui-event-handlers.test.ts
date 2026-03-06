@@ -212,6 +212,27 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     expect(chatLog.updateAssistant).toHaveBeenCalledWith("hello", "run-alias");
   });
 
+  it("accepts chat events with missing sessionKey as current session events", () => {
+    const { state, chatLog, handleChatEvent } = createHandlersHarness({
+      state: {
+        currentSessionKey: "agent:main:main",
+        activeChatRunId: null,
+      },
+    });
+
+    handleChatEvent({
+      runId: "run-empty-session-key",
+      state: "delta",
+      message: { content: "hello from implicit session" },
+    });
+
+    expect(state.activeChatRunId).toBe("run-empty-session-key");
+    expect(chatLog.updateAssistant).toHaveBeenCalledWith(
+      "hello from implicit session",
+      "run-empty-session-key",
+    );
+  });
+
   it("does not cross-match canonical session keys from different agents", () => {
     const { chatLog, handleChatEvent } = createHandlersHarness({
       state: {

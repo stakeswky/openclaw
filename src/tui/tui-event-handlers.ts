@@ -150,7 +150,13 @@ export function createEventHandlers(context: EventHandlerContext) {
   const isSameSessionKey = (left: string | undefined, right: string | undefined): boolean => {
     const normalizedLeft = (left ?? "").trim().toLowerCase();
     const normalizedRight = (right ?? "").trim().toLowerCase();
-    if (!normalizedLeft || !normalizedRight) {
+
+    // Gateway chat events may omit sessionKey to imply "current session".
+    // Accept missing event key for the active session only.
+    if (!normalizedLeft) {
+      return Boolean(normalizedRight);
+    }
+    if (!normalizedRight) {
       return false;
     }
     if (normalizedLeft === normalizedRight) {
