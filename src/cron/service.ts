@@ -14,8 +14,8 @@ export class CronService {
     await ops.start(this.state);
   }
 
-  stop() {
-    ops.stop(this.state);
+  async stop() {
+    await ops.stop(this.state);
   }
 
   async status() {

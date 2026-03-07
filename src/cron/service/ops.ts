@@ -127,8 +127,27 @@ export async function start(state: CronServiceState) {
   });
 }
 
-export function stop(state: CronServiceState) {
+export async function stop(state: CronServiceState) {
   stopTimer(state);
+  await locked(state, async () => {
+    await ensureLoaded(state, { skipRecompute: true });
+    if (!state.store) {
+      return;
+    }
+    const now = state.deps.nowMs();
+    let changed = false;
+    for (const job of state.store.jobs) {
+      if (typeof job.state.runningAtMs !== "number") {
+        continue;
+      }
+      job.state.runningAtMs = undefined;
+      job.updatedAtMs = now;
+      changed = true;
+    }
+    if (changed) {
+      await persist(state);
+    }
+  });
 }
 
 export async function status(state: CronServiceState) {

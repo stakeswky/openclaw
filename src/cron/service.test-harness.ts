@@ -171,7 +171,7 @@ export async function withCronServiceForTest(
   try {
     await run({ cron, enqueueSystemEvent, requestHeartbeatNow });
   } finally {
-    cron.stop();
+    await cron.stop();
     await store.cleanup();
   }
 }

@@ -82,7 +82,7 @@ describe("buildGatewayCronService", () => {
         }),
       );
     } finally {
-      state.cron.stop();
+      await state.cron.stop();
     }
   });
 
@@ -136,7 +136,7 @@ describe("buildGatewayCronService", () => {
         },
       });
     } finally {
-      state.cron.stop();
+      await state.cron.stop();
     }
   });
 });
